@@ -1,19 +1,23 @@
-package videoPlayer;
+
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.*;
 import java.io.*;
 import javax.swing.*;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.concurrent.TimeUnit;
 
 
 public class AVPlayer {
-
 	JFrame frame;
 	JLabel lbIm1;
 	JLabel lbIm2;
 	BufferedImage img;
-
+	JButton stopButton;
+	int status = 1;
 	public void initialize(String[] args){
 		int width = 480;
 		int height = 270;
@@ -51,81 +55,84 @@ public class AVPlayer {
 					ind++;
 				}
 			}
+			// Use labels to display the images
+			frame = new JFrame();
+			GridBagLayout gLayout = new GridBagLayout();
+			frame.getContentPane().setLayout(gLayout);
 
+			JLabel lbText1 = new JLabel("Video: " + args[0]);
+			lbText1.setHorizontalAlignment(SwingConstants.LEFT);
+			JLabel lbText2 = new JLabel("Audio: " + args[1]);
+			lbText2.setHorizontalAlignment(SwingConstants.LEFT);
+			lbIm1 = new JLabel(new ImageIcon(img));
+			JButton stopButton = new JButton("Play");
+			stopButton.setHorizontalAlignment(SwingConstants.LEFT);
+			stopHandler stopHandle = new stopHandler();
+			stopButton.addActionListener(stopHandle);
+			
+			GridBagConstraints c = new GridBagConstraints();
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.anchor = GridBagConstraints.CENTER;
+			c.weightx = 0.5;
+			c.gridx = 0;
+			c.gridy = 0;
+			frame.getContentPane().add(lbText1, c);
 
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.anchor = GridBagConstraints.CENTER;
+			c.weightx = 0.5;
+			c.gridx = 0;
+			c.gridy = 1;
+			frame.getContentPane().add(lbText2, c);
+
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridx = 0;
+			c.gridy = 2;
+			frame.getContentPane().add(lbIm1, c);
+			
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridx = 0;
+			c.gridy = 3;
+			frame.getContentPane().add(stopButton, c);			
+
+			frame.pack();
+			frame.setVisible(true);
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			int counter =0;
+			System.out.println(counter);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-
-		// Use labels to display the images
-		frame = new JFrame();
-		GridBagLayout gLayout = new GridBagLayout();
-		frame.getContentPane().setLayout(gLayout);
-
-		JLabel lbText1 = new JLabel("Video: " + args[0]);
-		lbText1.setHorizontalAlignment(SwingConstants.LEFT);
-		JLabel lbText2 = new JLabel("Audio: " + args[1]);
-		lbText2.setHorizontalAlignment(SwingConstants.LEFT);
-		lbIm1 = new JLabel(new ImageIcon(img));
-
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.anchor = GridBagConstraints.CENTER;
-		c.weightx = 0.5;
-		c.gridx = 0;
-		c.gridy = 0;
-		frame.getContentPane().add(lbText1, c);
-
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.anchor = GridBagConstraints.CENTER;
-		c.weightx = 0.5;
-		c.gridx = 0;
-		c.gridy = 1;
-		frame.getContentPane().add(lbText2, c);
-
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = 2;
-		frame.getContentPane().add(lbIm1, c);
-
-		frame.pack();
-		frame.setVisible(true);
-		
-		
+		}		
 	}
 	
-	public void playWAV(String filename){
-		// opens the inputStream
-		FileInputStream inputStream;
-		try {
-			inputStream = new FileInputStream(filename);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return;
-		}
-
-		// initializes the playSound Object
-		PlaySound playSound = new PlaySound(inputStream);
-
-		// plays the sound
-		try {
-			playSound.play();
-		} catch (PlayWaveException e) {
-			e.printStackTrace();
-			return;
-		}
-	}
+    private class stopHandler implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+                if (status==1){
+                	status = 0;
+                } else{
+                	status = 1;
+                }
+                System.out.println(status);
+        }
+    }
 
 	public static void main(String[] args) {
-		if (args.length < 2) {
-		    System.err.println("usage: java -jar AVPlayer.jar [RGB file] [WAV file]");
-		    return;
-		}
+		String[] args2 = new String[2];
+		args2[0] = "Alin_Day1_002.rgb";
+		args2[1] = "Alin_Day1_002.wav";
 		AVPlayer ren = new AVPlayer();
-		ren.initialize(args);
-		ren.playWAV(args[1]);
+		ren.initialize(args2);
+		
+		soundClass audiotrack = new soundClass(args2[1], ren);
+		Thread audioThread = new Thread(audiotrack);
+		audioThread.start();
+		
+		videoClass videotrack = new videoClass(args2[0], ren);
+		Thread videoThread = new Thread(videotrack);
+		videoThread.start();
+		
 	}
 
 }

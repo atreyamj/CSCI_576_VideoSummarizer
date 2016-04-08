@@ -1,14 +1,11 @@
-package videoPlayer;
+//package org.wikijava.sound.playWave;
+
 /**
- * @author 
+ * @author Giulio
  */
 public class PlayWaveException extends Exception {
 
-    /**
-	 * 
-	 */
-
-	public PlayWaveException(String message) {
+    public PlayWaveException(String message) {
 	super(message);
     }
 
