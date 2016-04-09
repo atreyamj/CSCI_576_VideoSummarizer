@@ -35,8 +35,9 @@ public class videoClass implements Runnable {
 			byte[] bytes = new byte[(int) len];
 			int offset = 0;
 			int numRead = 388800;
-
-			while (numRead >= 388800) {
+			int flag = 0;
+			
+			while (numRead != -1) {
 				if(player.status==1){
 					//System.out.println("running");
 					offset = 0;
@@ -47,13 +48,24 @@ public class videoClass implements Runnable {
 					try {
 						TimeUnit.MILLISECONDS.sleep(66);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+						// 
 						e.printStackTrace();
 					}
+					flag=1;
+				} else if (player.status==0){
+					Thread.sleep(1);
 				} else{
+					System.out.println("resetting");
+					if (flag == 1){
+						System.out.println("flagged");
+						is.close();
+						is = new FileInputStream(file);
+						flag=0;
+					}
 					Thread.sleep(1);
 				}
 			}
+			is.close();
 
 		} catch (Exception e) {
 

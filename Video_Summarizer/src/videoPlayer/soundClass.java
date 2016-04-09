@@ -72,7 +72,10 @@ public class soundClass implements Runnable{
 					if (readBytes >= 0) {
 						dataLine.write(audioBuffer, 0, readBytes);
 					}
-				} else{
+				} else if (player.status == 0){
+					Thread.sleep(1);
+				} else {
+					audioInputStream.reset();
 					Thread.sleep(1);
 				}
 			}

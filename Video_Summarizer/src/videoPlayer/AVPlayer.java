@@ -17,6 +17,7 @@ public class AVPlayer {
 	JLabel lbIm2;
 	BufferedImage img;
 	JButton stopButton;
+	JButton pauseButton;
 	int status = 1;
 	public void initialize(String[] args){
 		int width = 480;
@@ -65,10 +66,15 @@ public class AVPlayer {
 			JLabel lbText2 = new JLabel("Audio: " + args[1]);
 			lbText2.setHorizontalAlignment(SwingConstants.LEFT);
 			lbIm1 = new JLabel(new ImageIcon(img));
-			JButton stopButton = new JButton("Play");
-			stopButton.setHorizontalAlignment(SwingConstants.LEFT);
-			stopHandler stopHandle = new stopHandler();
+			JButton pauseButton = new JButton("Play/Pause");
+			pauseButton.setHorizontalAlignment(SwingConstants.LEFT);
+			pauseHandler pauseHandle = new pauseHandler();
+			pauseButton.addActionListener(pauseHandle);
+			
+			JButton stopButton = new JButton("Stop");
+			pauseHandler stopHandle = new pauseHandler();
 			stopButton.addActionListener(stopHandle);
+			stopButton.setHorizontalAlignment(SwingConstants.LEFT);
 			
 			GridBagConstraints c = new GridBagConstraints();
 			c.fill = GridBagConstraints.HORIZONTAL;
@@ -93,13 +99,18 @@ public class AVPlayer {
 			c.fill = GridBagConstraints.HORIZONTAL;
 			c.gridx = 0;
 			c.gridy = 3;
-			frame.getContentPane().add(stopButton, c);			
+
+			frame.getContentPane().add(pauseButton, c);
+			c.gridx = 0;
+			c.gridy = 4;
+			frame.getContentPane().add(stopButton, c);		
+			
 
 			frame.pack();
 			frame.setVisible(true);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			int counter =0;
-			System.out.println(counter);
+			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -107,14 +118,22 @@ public class AVPlayer {
 		}		
 	}
 	
-    private class stopHandler implements ActionListener {
+    private class pauseHandler implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+        	JButton x = (JButton) e.getSource();
+        	String buttonText = x.getText();
+        	if (buttonText.equals("Play/Pause")){
                 if (status==1){
                 	status = 0;
                 } else{
                 	status = 1;
                 }
                 System.out.println(status);
+        	}
+        	if (buttonText.equals("Stop")){
+                status = 2;
+                System.out.println(status);
+        	}
         }
     }
 
